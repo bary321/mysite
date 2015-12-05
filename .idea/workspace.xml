@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6298432e-799a-4046-a7d7-27bdef45c56c" name="Default" comment="1">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/tests.py" afterPath="$PROJECT_DIR$/server/tests.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/views.py" afterPath="$PROJECT_DIR$/server/views.py" />
     </list>
     <ignored path="mysite.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -73,11 +74,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.35812673">
-              <caret line="43" column="32" selection-start-line="43" selection-start-column="32" selection-end-line="43" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="82" column="29" selection-start-line="82" selection-start-column="29" selection-end-line="82" selection-end-column="29" />
               <folding>
                 <element signature="e#0#47#0" expanded="true" />
               </folding>
@@ -85,11 +86,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tests.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="tests.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="28" column="17" selection-start-line="28" selection-start-column="17" selection-end-line="28" selection-end-column="17" />
+            <state vertical-scroll-proportion="0.677686">
+              <caret line="43" column="13" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
               <folding>
                 <element signature="e#35#50#0" expanded="true" />
               </folding>
@@ -133,8 +134,8 @@
         <option value="$PROJECT_DIR$/mysite/urls.py" />
         <option value="$PROJECT_DIR$/templates/uploadfile.html" />
         <option value="$PROJECT_DIR$/templates/home.html" />
-        <option value="$PROJECT_DIR$/server/tests.py" />
         <option value="$PROJECT_DIR$/server/views.py" />
+        <option value="$PROJECT_DIR$/server/tests.py" />
       </list>
     </option>
   </component>
@@ -974,22 +975,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/tests.py">
+    <entry file="file://$PROJECT_DIR$/server/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="28" column="17" selection-start-line="28" selection-start-column="17" selection-end-line="28" selection-end-column="17" />
+          <caret line="82" column="29" selection-start-line="82" selection-start-column="29" selection-end-line="82" selection-end-column="29" />
           <folding>
-            <element signature="e#35#50#0" expanded="true" />
+            <element signature="e#0#47#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/views.py">
+    <entry file="file://$PROJECT_DIR$/server/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.35812673">
-          <caret line="43" column="32" selection-start-line="43" selection-start-column="32" selection-end-line="43" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.677686">
+          <caret line="43" column="13" selection-start-line="43" selection-start-column="13" selection-end-line="43" selection-end-column="13" />
           <folding>
-            <element signature="e#0#47#0" expanded="true" />
+            <element signature="e#35#50#0" expanded="true" />
           </folding>
         </state>
       </provider>

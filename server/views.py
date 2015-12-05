@@ -73,7 +73,7 @@ def home(requeset):
     """
     # os.system("cd /home/projects/nw-packer/logo")
     err, li = commands.getstatusoutput('cd /home/projects/nw-packer/logo && ls ')
-    li.split('\n')
+    # li.split('\n')
     if requeset.method == "POST":
         compliform = Compli_Form(requeset.POST)
         if 'compi' in requeset.POST:

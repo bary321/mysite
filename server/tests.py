@@ -41,7 +41,7 @@ def getimage(dir_list):
         err, status = commands.getstatusoutput(r"cp -i " + LOGO_PATH + comp + r"/logo.png " + comp + r".png")
         if err != 0:
             return "A error arise when copping image : " + status
-    return 0 
+    return 0
 
 
 if __name__ == '__main__':

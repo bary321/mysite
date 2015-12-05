@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<p>已有公司列表</p>
+{% for l in list %}
+    <li>{{ l }}</li>
+{% endfor %}
+<div>
+    <form method="post">
+        {% for fo in compliform %}
+            <div class="fieldWrapper">
+                输入公司名称:{{ fo }}
+            </div>
+        {% endfor %}
+        <input type="submit" name="compi" value="编译打包并下载"/>
+        <br/>
+
+        <p>公司未存在时请点击</p>
+        <input type="submit" name="add" value="添加公司名"/>
+    </form>
+</div>
+
+</body>
+</html>

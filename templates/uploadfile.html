@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div>
+    <p>上传文件，图片名必须为“logo.png”和“logo_big.png”,
+    </p>
+    <form method="post" enctype="multipart/form-data">
+        {% for img in imgfile %}
+        <div class="fieldWrapper">
+            {{ img.label }}:{{ img }}
+        </div>
+        {% endfor %}
+        <input type="submit" value="ok"/>
+        </form>
+
+</div>
+<a href="http://192.168.2.181:8000/home" >回主页</a>
+</body>
+</html>

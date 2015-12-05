@@ -26,5 +26,13 @@ def local_packing(conp_name):
         return 0
 
 
+def getimage(dir_list):
+    if os.getcwd() != r"/root/mysite/_images":
+        os.chdir(r"/root/mysite/_images")
+        if os.getcwd() != r"/root/mysite/_images":
+            return "Can change direction to the '_images'."
+
+
+
 if __name__ == '__main__':
     print local_packing(r'zexabox')

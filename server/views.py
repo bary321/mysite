@@ -7,16 +7,25 @@ from django.core.urlresolvers import reverse
 
 
 class ImgForm(forms.Form):
+    """
+    A class for create a form to upload images
+    """
     conp_name = forms.CharField(max_length=20, label="input company name")
     Img1 = forms.FileField(label="select Logo_big")
     Img2 = forms.FileField(label="select Logo")
 
 
-class compli_Form(forms.Form):
+class Compli_Form(forms.Form):
+    """
+    A class for create a form to input company name
+    """
     conp_name = forms.CharField(max_length=20, label="input company name")
 
 
 def download_file_zip(request):
+    """
+    download files
+    """
     fp = open(r'/home/projects/bary/release/Zadmin.zip')
     data = fp.read()
     response = HttpResponse(data, content_type='application/zip')
@@ -29,6 +38,9 @@ def download_file_zip(request):
 
 
 def uploadfile(request):
+    """
+    Upload company's logo and input company name
+    """
     if request.method == "POST":
         imga = ImgForm(request.POST, request.FILES)
         if imga.is_valid():
@@ -56,11 +68,14 @@ def uploadfile(request):
 
 
 def home(requeset):
+    """
+    A function handle the page which should show first
+    """
     # os.system("cd /home/projects/nw-packer/logo")
     err, li = commands.getstatusoutput('cd /home/projects/nw-packer/logo && ls ')
     li.split('\n')
     if requeset.method == "POST":
-        compliform = compli_Form(requeset.POST)
+        compliform = Compli_Form(requeset.POST)
         if 'compi' in requeset.POST:
             if compliform.is_valid():
                 name = compliform.cleaned_data['conp_name']
@@ -72,11 +87,14 @@ def home(requeset):
         else:
             return HttpResponseRedirect(reverse('server.views.uploadfile'))
     else:
-        compliform = compli_Form()
+        compliform = Compli_Form()
     return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform})
 
 
 def local_packing(conp_name):
+    """
+    Do the compile and pack job in local
+    """
     if os.getcwd() != r"/home/projects/nw-packer/":
         os.getcwd()
         print os.getcwd()

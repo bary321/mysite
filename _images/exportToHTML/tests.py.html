@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>tests.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); }
+.s1 { color: rgb(169,183,198); }
+.s2 { color: rgb(204,86,177); font-weight: bold; }
+.s3 { color: rgb(165,194,97); }
+.s4 { color: rgb(204,120,50); }
+.s5 { color: rgb(126,108,187); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+tests.py</FONT>
+</center></TD></TR></TABLE>
+<pre>
+
+<span class="s0"># from django.test import TestCase</span><span class="s1"> 
+</span><span class="s2">import </span><span class="s1">commands 
+</span><span class="s2">import </span><span class="s1">os 
+ 
+ 
+</span><span class="s2">def </span><span class="s1">local_packing(conp_name): 
+    </span><span class="s2">if </span><span class="s1">os.getcwd() != </span><span class="s3">r&quot;/home/projects/nw-packer/&quot;</span><span class="s1">: 
+        os.getcwd() 
+        </span><span class="s2">print </span><span class="s1">os.getcwd() 
+        </span><span class="s2">if </span><span class="s1">os.chdir(</span><span class="s3">r&quot;/home/projects/nw-packer/&quot;</span><span class="s1">): 
+            </span><span class="s0"># return HttpResponse(&quot;A error arise : can't change direction to /home/projects/nw-packer&quot;)</span><span class="s1"> 
+            </span><span class="s2">return </span><span class="s3">&quot;A error arise : can't change direction to /home/projects/nw-packer/&quot;</span><span class="s1"> 
+    err</span><span class="s4">, </span><span class="s1">status1 = commands.getstatusoutput(</span><span class="s3">r'python /home/projects/nw-packer/replace_logo.py ' </span><span class="s1">+ conp_name) 
+    </span><span class="s2">if </span><span class="s1">err != </span><span class="s5">0</span><span class="s1">: 
+        </span><span class="s0"># return HttpResponse(&quot;A error arise when place logo : &quot; + status1)</span><span class="s1"> 
+        </span><span class="s2">return </span><span class="s3">&quot;A error arise when place logo : &quot; </span><span class="s1">+ status1 
+    </span><span class="s2">else</span><span class="s1">: 
+        err</span><span class="s4">, </span><span class="s1">status2 = commands.getstatusoutput(</span><span class="s3">r&quot;grunt | grep 'Done' &quot;</span><span class="s1">) 
+        </span><span class="s2">if </span><span class="s1">err != </span><span class="s5">0</span><span class="s1">: 
+            </span><span class="s0"># return HttpResponse(&quot;A error arise when compile: &quot;, err)</span><span class="s1"> 
+            </span><span class="s2">return </span><span class="s3">&quot;A error arise when compile: &quot;</span><span class="s4">, </span><span class="s1">err 
+        err</span><span class="s4">, </span><span class="s1">status3 = commands.getstatusoutput(</span><span class="s3">r&quot;zip -r /home/projects/bary/release/Zadmin.zip /home/projects/nw-packer/build/releases/Zadmin/win/Zadmin/&quot;</span><span class="s1">) 
+        </span><span class="s2">if </span><span class="s1">err != </span><span class="s5">0</span><span class="s1">: 
+            </span><span class="s0"># return HttpResponse(&quot;A error arise when packing: &quot; + status3)</span><span class="s1"> 
+            </span><span class="s2">return </span><span class="s3">&quot;A error arise when packing: &quot; </span><span class="s1">+ status3 
+        </span><span class="s2">return </span><span class="s5">0</span><span class="s1"> 
+ 
+ 
+</span><span class="s2">if </span><span class="s1">__name__ == </span><span class="s3">'__main__'</span><span class="s1">: 
+    </span><span class="s2">print </span><span class="s1">local_packing(</span><span class="s3">r'zexabox'</span><span class="s1">) 
+</span></pre>
+</body>
+</html>

@@ -5,11 +5,6 @@ from django import forms
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 
-##################################
-COMPILE_WORK_PATH = r"/home/projects/nw-packer/"
-LOGO_PATH = COMPILE_WORK_PATH + "logo/"
-##################################
-
 
 class ImgForm(forms.Form):
     """
@@ -50,15 +45,9 @@ def uploadfile(request):
         imga = ImgForm(request.POST, request.FILES)
         if imga.is_valid():
             cn = imga.cleaned_data['conp_name']
-            cn = cn.strip()
-            cn = cn.lower()
-            if not cn.isalpha():
-                return HttpResponse("Can not contain Chinese or digital, must be plain English")
             ig1 = imga.cleaned_data['Img1'].name
             ig2 = imga.cleaned_data['Img2'].name
-            # print (ig1, ig2)
-            if not (ig1 == "logo.png" or ig2 == "logo.png" and ig1 == "logo-big.png" or ig2 == "logo-big.png"):
-                return HttpResponse("png name wrong")
+            print (ig1, ig2)
             cmd = "cd /home/projects/nw-packer/logo && " + "mkdir " + cn
             # os.system("cd /home/projects/nw-packer/logo")
             if not os.system(cmd):
@@ -85,14 +74,11 @@ def home(requeset):
     # os.system("cd /home/projects/nw-packer/logo")
     err, li = commands.getstatusoutput('cd /home/projects/nw-packer/logo && ls ')
     # li.split('\n')
-    getimage(li.split('\n'))
     if requeset.method == "POST":
         compliform = Compli_Form(requeset.POST)
         if 'compi' in requeset.POST:
             if compliform.is_valid():
                 name = compliform.cleaned_data['conp_name']
-                name = name.strip()
-                name = name.lower()
                 statu = local_packing(name)
                 if not statu:
                     return HttpResponseRedirect(reverse('server.views.download_file_zip'))
@@ -136,30 +122,3 @@ def local_packing(conp_name):
             # return HttpResponse("A error arise when packing: " + status3)
             return "An error arise when packing: " + status3
         return 0
-
-
-def getimage(dir_list):
-    if os.getcwd() != r"/root/mysite/server/static/server":
-        os.chdir(r"/root/mysite/server/static/server")
-        if os.getcwd() != r"/root/mysite/server/static/server":
-            return "Can change direction to the 'static'."
-    """
-    for comp in dir_list:
-        err, status = commands.getstatusoutput(r"cp -i " + LOGO_PATH + comp + r"/logo.png " + comp + r".png")
-        if err != 0:
-            return "A error arise when copping image : " + status
-        print comp, " done"
-    return 0
-    """
-    d = dir_list
-    # print len(dir_list)
-    for n in range(len(d)):
-        # print n
-        err, status = commands.getstatusoutput(r"cp -f " + LOGO_PATH + dir_list[0] + r"/logo-big.png " + dir_list[0] + r".png")
-        if err != 0:
-            return "A error arise when copping image : " + status
-        # print dir_list[0], " done"
-        # print dir_list, type(dir_list)
-        dir_list.pop(0)
-        # print dir_list
-    return 0

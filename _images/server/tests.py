@@ -38,13 +38,11 @@ def getimage(dir_list):
         if os.getcwd() != r"/root/mysite/_images":
             return "Can change direction to the '_images'."
     for comp in dir_list:
-        err, status = commands.getstatusoutput(r"cp -i /home/projects/nw-packer/" + comp + r"/logo.png " + comp + r".png")
+        err, status = commands.getstatusoutput(r"cp -i " + LOGO_PATH + comp + r"/logo.png " + comp + r".png")
         if err != 0:
             return "A error arise when copping image : " + status
     return 0
 
 
 if __name__ == '__main__':
-    # print local_packing(r'zexabox')
-    err, li = commands.getstatusoutput('ls /home/projects/nw-packer/logo')
-    getimage(li.split('\n'))
+    print local_packing(r'zexabox')

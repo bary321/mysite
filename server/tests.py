@@ -44,7 +44,66 @@ def getimage(dir_list):
     return 0
 
 
+def git_tag_list():
+    if os.getcwd() != r"/home/projects/zadmin":
+        os.chdir(r"/home/projects/zadmin")
+    if os.getcwd() != r"/home/projects/zadmin":
+        return r"Can't change direction to '/home/projects/zadmin'"
+    err, statu1 = commands.getstatusoutput(r"git tag -l")
+    if err != 0:
+        return r"A error arise when get tag list: "+statu1
+    l = statu1.split("\n")
+    return 0, l
+
+
+def git_checkout(list, num):
+    if os.getcwd() != r"/home/projects/zadmin":
+        os.chdir(r"/home/projects/zadmin")
+    if os.getcwd() != r"/home/projects/zadmin":
+        return 1, r"Can't change direction to '/home/projects/zadmin'"
+    try:
+        list[num]
+    except IndexError:
+        return 2, r"A error arise: list index out of range."
+    print r"git checkout "+"\""+list[num]+"\""
+    err1, statu1 = commands.getstatusoutput(r"git checkout "+"\""+list[num]+"\"")
+    if err1 != 0:
+        return 3, r"A error arise when change branch: "+statu1
+    return 0, "OK"
+
+
 if __name__ == '__main__':
     # print local_packing(r'zexabox')
-    err, li = commands.getstatusoutput('ls /home/projects/nw-packer/logo')
-    getimage(li.split('\n'))
+    # err, li = commands.getstatusoutput('ls /home/projects/nw-packer/logo')
+    # getimage(li.split('\n'))
+    err, list = git_tag_list()
+    # print err, list
+    err1, statu = git_checkout(list, 4)
+    print err, statu
+    os.system(r"cd /home/projects/zadmin && git branch")
+    err, list = git_tag_list()
+    # print err, list
+    err1, statu = git_checkout(list, 3)
+    print err, statu
+    os.system(r"cd /home/projects/zadmin && git branch")
+    err, list = git_tag_list()
+    # print err, list
+    err1, statu = git_checkout(list, 2)
+    print err, statu
+    os.system(r"cd /home/projects/zadmin && git branch")
+    err, list = git_tag_list()
+    # print err, list
+    err1, statu = git_checkout(list, 1)
+    print err, statu
+    os.system(r"cd /home/projects/zadmin && git branch")
+    err, list = git_tag_list()
+    # print err, list
+    err1, statu = git_checkout(list, 0)
+    print err, statu
+    os.system(r"cd /home/projects/zadmin && git branch")
+    err, list = git_tag_list()
+    # print err, list
+    err1, statu = git_checkout(list, 5)
+    print err1, statu
+    os.system(r"cd /home/projects/zadmin && git branch")
+

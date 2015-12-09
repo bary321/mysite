@@ -27,6 +27,7 @@ class Compli_Form(forms.Form):
     conp_name = forms.CharField(max_length=20, label="input company name")
 
 
+
 def download_file_zip(request):
     """
     download files
@@ -86,23 +87,34 @@ def home(requeset):
     err, li = commands.getstatusoutput('cd /home/projects/nw-packer/logo && ls ')
     # li.split('\n')
     getimage(li.split('\n'))
+    err, list = git_tag_list()
+    if err != 0:
+        return HttpResponse(list)
     if requeset.method == "POST":
         compliform = Compli_Form(requeset.POST)
-        if 'compi' in requeset.POST:
+        if 'compi' and 'choice' in requeset.POST:
             if compliform.is_valid():
                 name = compliform.cleaned_data['conp_name']
                 name = name.strip()
                 name = name.lower()
+                num = int(requeset.POST["choice"])
+                err1, statu1 = git_checkout(list, num)
+                if err1 != 0:
+                    return HttpResponse(statu1)
                 statu = local_packing(name)
                 if not statu:
+                    clear_environment()
                     return HttpResponseRedirect(reverse('server.views.download_file_zip'))
                 else:
                     return HttpResponse(statu)
+        elif 'choice' in requeset.POST:
+            print compliform.cleaned_data['choice']
         else:
             return HttpResponseRedirect(reverse('server.views.uploadfile'))
     else:
         compliform = Compli_Form()
-    return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform})
+    return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform,
+                                            'version_list': list})
 
 
 def local_packing(conp_name):
@@ -110,7 +122,7 @@ def local_packing(conp_name):
     Do the compile and pack job in local
     """
     if os.getcwd() != r"/home/projects/nw-packer/":
-        os.getcwd()
+        # os.getcwd()
         print os.getcwd()
         if os.chdir(r"/home/projects/nw-packer/"):
             # return HttpResponse("A error arise : can't change direction to /home/projects/nw-packer")
@@ -162,4 +174,55 @@ def getimage(dir_list):
         # print dir_list, type(dir_list)
         dir_list.pop(0)
         # print dir_list
+    return 0
+
+
+def git_tag_list():
+    if os.getcwd() != r"/home/projects/zadmin":
+        os.chdir(r"/home/projects/zadmin")
+    if os.getcwd() != r"/home/projects/zadmin":
+        return 1, r"Can't change direction to '/home/projects/zadmin'"
+    err, statu1 = commands.getstatusoutput(r"git tag -l")
+    if err != 0:
+        return 2, r"A error arise when get tag list: "+statu1
+    l = statu1.split("\n")
+    return 0, l
+
+
+def git_checkout(list, num):
+    if os.getcwd() != r"/home/projects/zadmin":
+        os.chdir(r"/home/projects/zadmin")
+    if os.getcwd() != r"/home/projects/zadmin":
+        return 1, r"Can't change direction to '/home/projects/zadmin'"
+    try:
+        list[num]
+    except IndexError:
+        return 2, r"A error arise: list index out of range."
+    print r"git checkout "+"\""+list[num]+"\""
+    err1, statu1 = commands.getstatusoutput(r"git checkout "+"\""+list[num]+"\"")
+    if err1 != 0:
+        return 3, r"A error arise when change branch: "+statu1
+    return 0, "OK"
+
+
+def clear_environment(conp_name="zexabox"):
+    """
+    replace all branch logo to zexabox.Ensure the error
+    "error: Your local changes to the following files would be overwritten by checkout:
+    images/logo-big.png
+    images/logo.png
+    Please, commit your changes or stash them before you can switch branches.
+    Aborting"
+    does no occur.
+    """
+    if os.getcwd() != r"/home/projects/nw-packer/":
+        # os.getcwd()
+        print os.getcwd()
+        if os.chdir(r"/home/projects/nw-packer/"):
+            # return HttpResponse("A error arise : can't change direction to /home/projects/nw-packer")
+            return "An error arise : can't change direction to /home/projects/nw-packer/"
+    err, status1 = commands.getstatusoutput(r'python /home/projects/nw-packer/replace_logo.py ' + conp_name)
+    if err != 0:
+        # return HttpResponse("A error arise when place logo : " + status1)
+        return "An error arise when place logo : " + status1
     return 0

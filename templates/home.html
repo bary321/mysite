@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title></title>
@@ -7,11 +7,18 @@
 <body>
 <p>已有公司列表</p>
 {% for l in list %}
-    <li>{{ l }}</li>
+    <p><big><b>{{ l }}</b></big><br />
     <img src="/static/server/{{ l }}.png" alt="{{ l }}"/>
+    </p>
+    <hr/>
 {% endfor %}
 <div>
+    <p><big><b>请选择版本号</b></big><br />
     <form method="post">
+        {% for version in version_list %}
+            <input type="radio" name="choice"  id="version{{ forloop.counter0 }}" value="{{ forloop.counter0 }}"/>
+            <label for="choice{{ forloop.counter0 }}">{{ version }}</label>
+        {% endfor %}
         {% for fo in compliform %}
             <div class="fieldWrapper">
                 输入公司名称:{{ fo }}

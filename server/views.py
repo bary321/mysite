@@ -8,6 +8,8 @@ from django.core.urlresolvers import reverse
 ##################################
 COMPILE_WORK_PATH = r"/home/projects/nw-packer/"
 LOGO_PATH = COMPILE_WORK_PATH + "logo/"
+
+
 ##################################
 
 
@@ -20,12 +22,11 @@ class ImgForm(forms.Form):
     Img2 = forms.FileField(label="select Logo")
 
 
-class Compli_Form(forms.Form):
+class CompliForm(forms.Form):
     """
     A class for create a form to input company name
     """
     conp_name = forms.CharField(max_length=20, label="input company name")
-
 
 
 def download_file_zip(request):
@@ -87,18 +88,18 @@ def home(requeset):
     err, li = commands.getstatusoutput('cd /home/projects/nw-packer/logo && ls ')
     # li.split('\n')
     getimage(li.split('\n'))
-    err, list = git_tag_list()
+    err, list_version = git_tag_list()
     if err != 0:
-        return HttpResponse(list)
+        return HttpResponse(list_version)
     if requeset.method == "POST":
-        compliform = Compli_Form(requeset.POST)
+        compliform = CompliForm(requeset.POST)
         if 'compi' and 'choice' in requeset.POST:
             if compliform.is_valid():
                 name = compliform.cleaned_data['conp_name']
                 name = name.strip()
                 name = name.lower()
                 num = int(requeset.POST["choice"])
-                err1, statu1 = git_checkout(list, num)
+                err1, statu1 = git_checkout(list_version, num)
                 if err1 != 0:
                     return HttpResponse(statu1)
                 statu = local_packing(name)
@@ -107,14 +108,16 @@ def home(requeset):
                     return HttpResponseRedirect(reverse('server.views.download_file_zip'))
                 else:
                     return HttpResponse(statu)
-        elif 'choice' in requeset.POST:
-            print compliform.cleaned_data['choice']
-        else:
+        elif 'add' in requeset.POST:
             return HttpResponseRedirect(reverse('server.views.uploadfile'))
+        else:
+            return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform,
+                                                    'version_list': list_version,
+                                                    'error_message': "You didn't select any branch"})
     else:
-        compliform = Compli_Form()
+        compliform = CompliForm()
     return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform,
-                                            'version_list': list})
+                                            'version_list': list_version, 'error_message': "You must select a branch"})
 
 
 def local_packing(conp_name):
@@ -167,7 +170,8 @@ def getimage(dir_list):
     # print len(dir_list)
     for n in range(len(d)):
         # print n
-        err, status = commands.getstatusoutput(r"cp -f " + LOGO_PATH + dir_list[0] + r"/logo-big.png " + dir_list[0] + r".png")
+        err, status = commands.getstatusoutput(
+            r"cp -f " + LOGO_PATH + dir_list[0] + r"/logo-big.png " + dir_list[0] + r".png")
         if err != 0:
             return "A error arise when copping image : " + status
         # print dir_list[0], " done"
@@ -184,24 +188,24 @@ def git_tag_list():
         return 1, r"Can't change direction to '/home/projects/zadmin'"
     err, statu1 = commands.getstatusoutput(r"git tag -l")
     if err != 0:
-        return 2, r"A error arise when get tag list: "+statu1
+        return 2, r"A error arise when get tag list: " + statu1
     l = statu1.split("\n")
     return 0, l
 
 
-def git_checkout(list, num):
+def git_checkout(list_version, num):
     if os.getcwd() != r"/home/projects/zadmin":
         os.chdir(r"/home/projects/zadmin")
     if os.getcwd() != r"/home/projects/zadmin":
         return 1, r"Can't change direction to '/home/projects/zadmin'"
     try:
-        list[num]
+        list_version[num]
     except IndexError:
         return 2, r"A error arise: list index out of range."
-    print r"git checkout "+"\""+list[num]+"\""
-    err1, statu1 = commands.getstatusoutput(r"git checkout "+"\""+list[num]+"\"")
+    print r"git checkout " + "\"" + list_version[num] + "\""
+    err1, statu1 = commands.getstatusoutput(r"git checkout " + "\"" + list_version[num] + "\"")
     if err1 != 0:
-        return 3, r"A error arise when change branch: "+statu1
+        return 3, r"A error arise when change branch: " + statu1
     return 0, "OK"
 
 

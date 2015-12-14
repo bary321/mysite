@@ -1,6 +1,7 @@
 # from django.test import TestCase
 import commands
 import os
+import time
 ##################################
 COMPILE_WORK_PATH = r"/home/projects/nw-packer/"
 LOGO_PATH = COMPILE_WORK_PATH + "logo/"
@@ -72,38 +73,60 @@ def git_checkout(list, num):
     return 0, "OK"
 
 
+def log(string):
+    sync_time()
+    tm = time.asctime()
+    fp = open(r"/root/mysite/server/log.txt")
+    fp.write(tm, string, " \n")
+    fp.close()
+
+
+def sync_time():
+    #print os.system("ntpdate 202.118.1.47")
+    if os.system("ntpdate 202.118.1.47"):
+        return "Can't get time from ntp server."
+    #print os.system("hwclock -w")
+    if os.system("hwclock -w"):
+        return "Can't update time in BIOS."
+    print time.asctime()
+    print commands.getstatusoutput("date")
+    return 0
+
 if __name__ == '__main__':
     # print local_packing(r'zexabox')
     # err, li = commands.getstatusoutput('ls /home/projects/nw-packer/logo')
     # getimage(li.split('\n'))
-    err, list = git_tag_list()
+    err, list_version = git_tag_list()
     # print err, list
-    err1, statu = git_checkout(list, 4)
+    """err1, statu = git_checkout(list_version, 4)
     print err, statu
     os.system(r"cd /home/projects/zadmin && git branch")
-    err, list = git_tag_list()
+    err, list_version = git_tag_list()
     # print err, list
-    err1, statu = git_checkout(list, 3)
+    err1, statu = git_checkout(list_version, 3)
     print err, statu
     os.system(r"cd /home/projects/zadmin && git branch")
-    err, list = git_tag_list()
+    err, list_version = git_tag_list()
     # print err, list
-    err1, statu = git_checkout(list, 2)
+    err1, statu = git_checkout(list_version, 2)
     print err, statu
     os.system(r"cd /home/projects/zadmin && git branch")
-    err, list = git_tag_list()
+    err, list_version = git_tag_list()
     # print err, list
-    err1, statu = git_checkout(list, 1)
+    err1, statu = git_checkout(list_version, 1)
     print err, statu
     os.system(r"cd /home/projects/zadmin && git branch")
-    err, list = git_tag_list()
+    err, list_version = git_tag_list()
     # print err, list
-    err1, statu = git_checkout(list, 0)
+    err1, statu = git_checkout(list_version, 0)
     print err, statu
     os.system(r"cd /home/projects/zadmin && git branch")
-    err, list = git_tag_list()
+    err, list_version = git_tag_list()
     # print err, list
-    err1, statu = git_checkout(list, 5)
+    err1, statu = git_checkout(list_version, 5)
     print err1, statu
     os.system(r"cd /home/projects/zadmin && git branch")
+    """
+    print sync_time()
+
 

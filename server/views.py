@@ -4,12 +4,11 @@ import commands
 from django import forms
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+import time
 
 ##################################
 COMPILE_WORK_PATH = r"/home/projects/nw-packer/"
 LOGO_PATH = COMPILE_WORK_PATH + "logo/"
-
-
 ##################################
 
 
@@ -40,6 +39,7 @@ def download_file_zip(request):
     fp.close()
     err, status4 = commands.getstatusoutput(r"rm /home/projects/bary/release/Zadmin.zip")
     if err != 0:
+        log("An error arise when rm temp : " + status4)
         return HttpResponse("An error arise when rm temp : " + status4)
     return response
 
@@ -73,6 +73,8 @@ def uploadfile(request):
             s = imga.cleaned_data['Img2'].read()
             fp2.write(s)
             fp2.close()
+            report = "upload photos ; Company name : " + cn
+            log(report)
             return HttpResponseRedirect(reverse('server.views.home'))
     else:
         imga = ImgForm()
@@ -90,6 +92,7 @@ def home(requeset):
     getimage(li.split('\n'))
     err, list_version = git_tag_list()
     if err != 0:
+        log(list_version)
         return HttpResponse(list_version)
     if requeset.method == "POST":
         compliform = CompliForm(requeset.POST)
@@ -101,23 +104,30 @@ def home(requeset):
                 num = int(requeset.POST["choice"])
                 err1, statu1 = git_checkout(list_version, num)
                 if err1 != 0:
+                    log(statu1)
                     return HttpResponse(statu1)
+                logs = "change version : " + list_version[num]
+                log(logs)
                 statu = local_packing(name)
                 if not statu:
                     clear_environment()
+                    logs = "compiled successful and now begin the download.The Company name is: "+name
+                    log(logs)
                     return HttpResponseRedirect(reverse('server.views.download_file_zip'))
                 else:
+                    clear_environment()
+                    log(statu)
                     return HttpResponse(statu)
         elif 'add' in requeset.POST:
             return HttpResponseRedirect(reverse('server.views.uploadfile'))
         else:
             return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform,
                                                     'version_list': list_version,
-                                                    'error_message': "You didn't select any branch"})
+                                                    'error_message': "You didn't select any version"})
     else:
         compliform = CompliForm()
     return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform,
-                                            'version_list': list_version, 'error_message': "You must select a branch"})
+                                            'version_list': list_version, 'error_message': "You must select a version"})
 
 
 def local_packing(conp_name):
@@ -154,6 +164,11 @@ def local_packing(conp_name):
 
 
 def getimage(dir_list):
+    """
+    copy image to static direction.So it can show in the page.
+    Improvement:
+    check weather the image exists before copy it.
+    """
     if os.getcwd() != r"/root/mysite/server/static/server":
         os.chdir(r"/root/mysite/server/static/server")
         if os.getcwd() != r"/root/mysite/server/static/server":
@@ -182,6 +197,9 @@ def getimage(dir_list):
 
 
 def git_tag_list():
+    """
+    get the version that can be use.
+    """
     if os.getcwd() != r"/home/projects/zadmin":
         os.chdir(r"/home/projects/zadmin")
     if os.getcwd() != r"/home/projects/zadmin":
@@ -194,6 +212,9 @@ def git_tag_list():
 
 
 def git_checkout(list_version, num):
+    """
+    checkout to the branch selected.
+    """
     if os.getcwd() != r"/home/projects/zadmin":
         os.chdir(r"/home/projects/zadmin")
     if os.getcwd() != r"/home/projects/zadmin":
@@ -229,4 +250,23 @@ def clear_environment(conp_name="zexabox"):
     if err != 0:
         # return HttpResponse("A error arise when place logo : " + status1)
         return "An error arise when place logo : " + status1
+    return 0
+
+
+def log(string):
+    sync_time()
+    tm = time.asctime()
+    fp = open(r"/root/mysite/server/log.txt", "a")
+    try:
+        logs = tm + " " + string + " \n"
+        fp.write(logs)
+    finally:
+        fp.close()
+
+
+def sync_time():
+    if os.system("ntpdate 202.118.1.47"):
+        return "Can't get time from ntp server."
+    if os.system("hwclock -w"):
+        return "Can't update time in BIOS."
     return 0

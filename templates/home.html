@@ -5,21 +5,19 @@
     <title></title>
 </head>
 <body>
-<p>已有公司列表</p>
-{% for l in list %}
-    <p><big><b>{{ l }}</b></big><br />
-    <img src="/static/server/{{ l }}.png" alt="{{ l }}"/>
-    </p>
-    <hr/>
-{% endfor %}
+
 <div>
-    <p><big><b>请选择版本号</b></big><br />
+    <p><strong><b>请选择版本号</b></strong><br />
     {%  if error_message %}<p><strong>{{ error_message }}</strong></p>{%  endif %}
     <form method="post">
         {% for version in version_list %}
+            {% if forloop.counter0|divisibleby:"3" %}
+                <br />
+            {% endif %}
             <input type="radio" name="choice"  id="version{{ forloop.counter0 }}" value="{{ forloop.counter0 }}"/>
             <label for="choice{{ forloop.counter0 }}">{{ version }}</label>
         {% endfor %}
+    <hr />
         {% for fo in compliform %}
             <div class="fieldWrapper">
                 输入公司名称:{{ fo }}
@@ -31,7 +29,32 @@
         <p>公司未存在时请点击</p>
         <input type="submit" name="add" value="添加公司名"/>
     </form>
-</div>
+<hr/>
+<form>
+    <select name="company">
+        <option value="baode">baode</option>
+        <option value="fiamm">fiamm</option>
+        </select>
+</form>
+<h3>>已有公司列表</h3>
+<table border="3">
+<tr>
+    {% for l in list %}
 
+    <td>
+    <img src="/static/server/{{ l }}.png" width="150" height="50" alt="{{ l }}"/>
+        <br />
+    <b>{{ l }}</b>
+    </td>
+        {% if forloop.counter|divisibleby:"4" %}
+    </tr>
+        {% endif %}
+        {% if forloop.counter|divisibleby:"4" %}
+    <tr>
+        {% endif %}
+{% endfor %}
+</tr>
+</table>
+</div>
 </body>
 </html>

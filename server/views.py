@@ -18,7 +18,7 @@ class ImgForm(forms.Form):
     """
     conp_name = forms.CharField(max_length=20, label="input company name")
     Img1 = forms.FileField(label="select Logo_big")
-    Img2 = forms.FileField(label="select Logo")
+    Img2 = forms.FileField(label="select Logo    ")
 
 
 class CompliForm(forms.Form):
@@ -95,38 +95,35 @@ def home(requeset):
         log(list_version)
         return HttpResponse(list_version)
     if requeset.method == "POST":
-        compliform = CompliForm(requeset.POST)
-        if 'compi' and 'choice' in requeset.POST:
-            if compliform.is_valid():
-                name = compliform.cleaned_data['conp_name']
-                name = name.strip()
-                name = name.lower()
-                num = int(requeset.POST["choice"])
-                err1, statu1 = git_checkout(list_version, num)
-                if err1 != 0:
-                    log(statu1)
-                    return HttpResponse(statu1)
-                logs = "change version : " + list_version[num]
+        if 'compi' in requeset.POST and 'choice' in requeset.POST and 'company' in requeset.POST:
+            name = requeset.POST['company']
+            name = name.strip()
+            name = name.lower()
+            num = int(requeset.POST['choice'])
+            err1, statu1 = git_checkout(list_version, num)
+            if err1 != 0:
+                log(statu1)
+                return HttpResponse(statu1)
+            logs = "change version : " + list_version[num]
+            log(logs)
+            statu = local_packing(name)
+            if not statu:
+                clear_environment()
+                logs = "compiled successful and now begin the download.The Company name is: " + name
                 log(logs)
-                statu = local_packing(name)
-                if not statu:
-                    clear_environment()
-                    logs = "compiled successful and now begin the download.The Company name is: "+name
-                    log(logs)
-                    return HttpResponseRedirect(reverse('server.views.download_file_zip'))
-                else:
-                    clear_environment()
-                    log(statu)
-                    return HttpResponse(statu)
+                return HttpResponseRedirect(reverse('server.views.download_file_zip'))
+            else:
+                clear_environment()
+                log(statu)
+                return HttpResponse(statu)
         elif 'add' in requeset.POST:
             return HttpResponseRedirect(reverse('server.views.uploadfile'))
         else:
-            return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform,
+            return render_to_response('home.html', {'list': li.split('\n'),
                                                     'version_list': list_version,
                                                     'error_message': "You didn't select any version"})
-    else:
-        compliform = CompliForm()
-    return render_to_response('home.html', {'list': li.split('\n'), 'compliform': compliform,
+
+    return render_to_response('home.html', {'list': li.split('\n'),
                                             'version_list': list_version, 'error_message': "You must select a version"})
 
 
@@ -147,8 +144,7 @@ def local_packing(conp_name):
     else:
         err, status2 = commands.getstatusoutput(r"grunt | grep 'Done' ")
         if err != 0:
-            # return HttpResponse("A error arise when compile: ", err)
-            return "An error arise when compile: ", err
+            return "An error arise when compile: " + status2
         if os.getcwd() != r"/home/projects/nw-packer/build/releases/Zadmin/win/":
             os.getcwd()
             print os.getcwd()
@@ -161,6 +157,22 @@ def local_packing(conp_name):
             # return HttpResponse("A error arise when packing: " + status3)
             return "An error arise when packing: " + status3
         return 0
+
+
+def local_packing_shell(conp_name):
+    """
+    Do the compile and pack job in local with shell script
+    """
+    if os.getcwd() != r"/root/mysite/":
+        print os.getcwd()
+        if os.chdir(r"/root/mysite/"):
+            return r"An error arise : can't change direction to /root/mysite"
+        else:
+            print os.getcwd()
+    cmd = "sh local_1.sh " + conp_name + " 1> /dev/null"
+    err, statu = commands.getstatusoutput(cmd)
+    if err != 0:
+        return "A error arise when packing :" + statu + " " + err
 
 
 def getimage(dir_list):
@@ -254,7 +266,7 @@ def clear_environment(conp_name="zexabox"):
 
 
 def log(string):
-    sync_time()
+    # sync_time()
     tm = time.asctime()
     fp = open(r"/root/mysite/server/log.txt", "a")
     try:

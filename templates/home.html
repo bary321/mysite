@@ -2,10 +2,15 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>打包系统</title>
+    <script type="text/javascript">
+        function disp_alert() {
+            alert("我是警告框！！")
+        }
+    </script>
 </head>
 <body>
-
+<input type="button" onclick="disp_alert()" value="显示警告框"/>
 <div>
     <p><strong><b>请选择版本号</b></strong><br />
     {%  if error_message %}<p><strong>{{ error_message }}</strong></p>{%  endif %}
@@ -18,11 +23,12 @@
             <label for="choice{{ forloop.counter0 }}">{{ version }}</label>
         {% endfor %}
     <hr />
-        {% for fo in compliform %}
-            <div class="fieldWrapper">
-                输入公司名称:{{ fo }}
-            </div>
+        <p>请选择公司</p>
+        <select name="company">
+            {% for l in list %}
+                <option value="{{ l }}">{{ l }}</option>
         {% endfor %}
+        </select>
         <input type="submit" name="compi" value="编译打包并下载"/>
         <br/>
 
@@ -30,12 +36,6 @@
         <input type="submit" name="add" value="添加公司名"/>
     </form>
 <hr/>
-<form>
-    <select name="company">
-        <option value="baode">baode</option>
-        <option value="fiamm">fiamm</option>
-        </select>
-</form>
 <h3>>已有公司列表</h3>
 <table border="3">
 <tr>

@@ -124,7 +124,7 @@ def home(requeset):
                                                     'error_message': "You didn't select any version"})
 
     return render_to_response('home.html', {'list': li.split('\n'),
-                                            'version_list': list_version, 'error_message': "You must select a version"})
+                                            'version_list': list_version, 'error_message': ""})
 
 
 def local_packing(conp_name):

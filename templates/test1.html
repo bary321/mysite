@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>html form onsubmit使用</title>
+<script type="text/javascript">
+alert("加载此页面时执行");
+function buttonSubmit(){
+    document.form1.submit();
+}
+</script>
+</head>
+<body>
+<a onclick="return confirm('是否跳转到百度？');" href="http://www.baidu.com">baidu</a>
+<form name="form1" onsubmit="return confirm('是否进行提交？');">
+<input type="submit" value="submit" />
+<input type="button" value="button" onClick="buttonSubmit();">
+</form> 
+</body>
+</html>

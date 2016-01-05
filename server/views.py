@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 import os
 import commands
 from django import forms
@@ -9,6 +9,9 @@ import time
 ##################################
 COMPILE_WORK_PATH = r"/home/projects/nw-packer/"
 LOGO_PATH = COMPILE_WORK_PATH + "logo/"
+RELEASE_TEMP = r"/home/projects/bary/release"
+RELEASE_EXE_NAME = ""
+RELEASE_ZIP_NAME = ""
 ##################################
 
 
@@ -28,16 +31,23 @@ class CompliForm(forms.Form):
     conp_name = forms.CharField(max_length=20, label="input company name")
 
 
-def download_file_zip(request):
+def download_file_zip(request, version):
     """
     download files
     """
-    fp = open(r'/home/projects/bary/release/Zadmin.zip')
+
+    path = r"/home/projects/bary/release/Zadmin" + version + ".zip"
+    # fp = open(r'/home/projects/bary/release/Zadmin.zip')
+    fp = open(path)
     data = fp.read()
     response = HttpResponse(data, content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename=Zadmin.zip'
+    arg = 'attachment; filename=Zadmin' + version + '.zip'
+    # response['Content-Disposition'] = 'attachment; filename=Zadmin.zip'
+    response['Content-Disposition'] = arg
     fp.close()
-    err, status4 = commands.getstatusoutput(r"rm /home/projects/bary/release/Zadmin.zip")
+    cmd = r"rm /home/projects/bary/release/Zadmin" + version + ".zip"
+    # err, status4 = commands.getstatusoutput(r"rm /home/projects/bary/release/Zadmin.zip")
+    err, status4 = commands.getstatusoutput(cmd)
     if err != 0:
         log("An error arise when rm temp : " + status4)
         return HttpResponse("An error arise when rm temp : " + status4)
@@ -82,7 +92,7 @@ def uploadfile(request):
     return render_to_response('uploadfile.html', {'imgfile': imga})
 
 
-def home(requeset):
+def home(request):
     """
     A function handle the page which should show first
     """
@@ -94,29 +104,32 @@ def home(requeset):
     if err != 0:
         log(list_version)
         return HttpResponse(list_version)
-    if requeset.method == "POST":
-        if 'compi' in requeset.POST and 'choice' in requeset.POST and 'company' in requeset.POST:
-            name = requeset.POST['company']
+    if request.method == "POST":
+        if 'compi' in request.POST and 'choice' in request.POST and 'company' in request.POST:
+            name = request.POST['company']
             name = name.strip()
             name = name.lower()
-            num = int(requeset.POST['choice'])
+            num = int(request.POST['choice'])
             err1, statu1 = git_checkout(list_version, num)
             if err1 != 0:
                 log(statu1)
                 return HttpResponse(statu1)
             logs = "change version : " + list_version[num]
             log(logs)
-            statu = local_packing(name)
+            version = list_version[num].replace("(", "_")
+            version = version.replace(")", "_")
+            statu = local_packing(name, version)
             if not statu:
                 clear_environment()
                 logs = "compiled successful and now begin the download.The Company name is: " + name
                 log(logs)
-                return HttpResponseRedirect(reverse('server.views.download_file_zip'))
+                url = "/download/" + version
+                return HttpResponseRedirect(url)
             else:
                 clear_environment()
                 log(statu)
                 return HttpResponse(statu)
-        elif 'add' in requeset.POST:
+        elif 'add' in request.POST:
             return HttpResponseRedirect(reverse('server.views.uploadfile'))
         else:
             return render_to_response('home.html', {'list': li.split('\n'),
@@ -127,7 +140,7 @@ def home(requeset):
                                             'version_list': list_version, 'error_message': ""})
 
 
-def local_packing(conp_name):
+def local_packing(conp_name, version):
     """
     Do the compile and pack job in local
     """
@@ -152,10 +165,34 @@ def local_packing(conp_name):
                 # return HttpResponse("A error arise : can't change direction to /home/projects/nw-packer")
                 return "An error arise when packing : can't change direction to \
                 /home/projects/nw-packer/build/releases/Zadmin/win/"
-        err, status3 = commands.getstatusoutput(r"zip -r /home/projects/bary/release/Zadmin.zip ./Zadmin/")
+            cmd = r"cp -r Zadmin ./temp/Zadmin" + version
+            err, status3 = commands.getstatusoutput(cmd)
+            print "cp direction: " + cmd
+            if err != 0:
+                return "An error arise when mv Zadmin" + status3 + cmd
+            path = r"/home/projects/nw-packer/build/releases/Zadmin/win/temp/Zadmin" + version
+            if os.chdir(path):
+                return "An error arise when change direction to temp"
+            cmd = r"mv Zadmin.exe Zadmin" + version + ".exe"
+            print "exe:" + cmd
+            err, status4 = commands.getstatusoutput(cmd)
+            if err != 0:
+                cmd = r"rm -r /home/projects/nw-packer/build/releases/Zadmin/win/temp/Zadmin" + version
+                err, status6 = commands.getstatusoutput(cmd)
+                return "An error arise when change exe name: " + status4
+        if os.chdir(r"/home/projects/nw-packer/build/releases/Zadmin/win/temp"):
+            return "An error arise when change direction to /home/projects/nw-packer/build/releases/Zadmin/win/temp"
+        cmd = r"zip -r /home/projects/bary/release/Zadmin" + version \
+              + ".zip ./Zadmin" + version
+        # err, status5 = commands.getstatusoutput(r"zip -r /home/projects/bary/release/Zadmin.zip ./Zadmin/")
+        err, status5 = commands.getstatusoutput(cmd)
         if err != 0:
             # return HttpResponse("A error arise when packing: " + status3)
-            return "An error arise when packing: " + status3
+            cmd = r"rm -r /home/projects/nw-packer/build/releases/Zadmin/win/temp/Zadmin" + version
+            err, status6 = commands.getstatusoutput(cmd)
+            return "An error arise when zip: " + status5 + cmd
+        cmd = r"rm -r /home/projects/nw-packer/build/releases/Zadmin/win/temp/Zadmin" + version
+        err, status6 = commands.getstatusoutput(cmd)
         return 0
 
 
@@ -252,6 +289,7 @@ def clear_environment(conp_name="zexabox"):
     Aborting"
     does no occur.
     """
+    os.chdir(r"/home/projects/nw-packer/")
     if os.getcwd() != r"/home/projects/nw-packer/":
         # os.getcwd()
         print os.getcwd()
@@ -282,3 +320,5 @@ def sync_time():
     if os.system("hwclock -w"):
         return "Can't update time in BIOS."
     return 0
+
+

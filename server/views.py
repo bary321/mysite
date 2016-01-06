@@ -312,6 +312,7 @@ def log(string):
         fp.write(logs)
     finally:
         fp.close()
+    
 
 
 def sync_time():

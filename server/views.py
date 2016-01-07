@@ -155,9 +155,13 @@ def local_packing(conp_name, version):
         # return HttpResponse("A error arise when place logo : " + status1)
         return "An error arise when place logo : " + status1
     else:
+        os.chdir(r"/home/projects/nw-packer")
         err, status2 = commands.getstatusoutput(r"grunt | grep 'Done' ")
         if err != 0:
-            return "An error arise when compile: " + status2
+            # if a error like "grunt no find " arise, we can reexecute it with a sh way to avoid it
+            err, status = commands.getstatusoutput(r"sh /root/mysite/compile.sh")
+            if err:
+                return "An error arise when compile: " + status
         if os.getcwd() != r"/home/projects/nw-packer/build/releases/Zadmin/win/":
             os.getcwd()
             print os.getcwd()
@@ -312,7 +316,18 @@ def log(string):
         fp.write(logs)
     finally:
         fp.close()
-    
+    # If the log file is too large, rename it
+    size = os.path.getsize(r"/root/mysite/server/log.txt")
+    if size/1024/1024 > 4:
+        for num in range(5, 0, -1):
+            old = r"/root/mysite/server/log(1).txt" + "." + str(num)
+            if os.path.isfile(old):
+                if num == 5:
+                    os.remove(old)
+                else:
+                    new = r"/root/mysite/server/log(1).txt" + "." + str((num + 1))
+                    os.rename(old, new)
+        os.rename(r"/root/mysite/server/log.txt", r"/root/mysite/server/log.txt.1")
 
 
 def sync_time():
